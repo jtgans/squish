@@ -26,10 +26,10 @@ import optparse
 
 import yaml
 
-import squish
+import squishlib
 
 
-class HelpCommand(squish.Command):
+class HelpCommand(squishlib.Command):
   '''
   Get the help documentation on other commands.
 
@@ -37,9 +37,9 @@ class HelpCommand(squish.Command):
   information on, and it will print it out for you on stdout.
   '''
 
-  _command_name = 'help'
-  _synopsis     = 'Get help on other commands.'
-  _usage        = 'help <command>'
+  command_name = 'help'
+  synopsis     = 'Get help on other commands.'
+  usage        = 'help <command>'
 
   def runCommand(self):
     print 'self._optparser is %s' % self._optparser

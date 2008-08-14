@@ -26,7 +26,7 @@ import optparse
 
 import yaml
 
-import squish
+import squishlib
 
 
 class Command(object):
@@ -35,11 +35,11 @@ class Command(object):
   common to all commands.
   '''
 
-  __metaclass__ = squish.RegisteredCommand
+  __metaclass__ = squishlib.RegisteredCommand
 
-  _command_name = ''
-  synopsis      = ''
-  usage         = ''
+  command_name = ''
+  synopsis     = ''
+  usage        = ''
 
   _optparser = None
 
@@ -48,4 +48,4 @@ class Command(object):
 
 
 # Make sure the base command doesn't show up in the registered command list.
-del squish.commands['']
+del squishlib.commands['']

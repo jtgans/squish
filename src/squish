@@ -44,41 +44,41 @@ import squishlib
 
 def showSquishUsage():
   print 'Usage: '
-  print '  %s <command> [<options>] [<arguments>]' % squish.progName
+  print '  %s <command> [<options>] [<arguments>]' % squishlib.progName
   print
   print '  Where <command> is one of the following:'
   print
 
-  commands = squish.commands.keys()
+  commands = squishlib.commands.keys()
   commands.sort()
 
   for cmd in commands:
-    print '  %s' % squish.commands[cmd]._usage
-    print '    %s' % squish.commands[cmd]._synopsis
+    print '  %s' % squishlib.commands[cmd].usage
+    print '    %s' % squishlib.commands[cmd].synopsis
 
   print
   print('Use %s help <command> for more information on a '
-        'command.') % squish.progName
+        'command.') % squishlib.progName
 
 
 def main():
-  squish.progName = os.path.basename(sys.argv[0])
+  squishlib.progName = os.path.basename(sys.argv[0])
 
-  if '-' in squish.progName:
-    (squish.progName, command) = squish.progName.split('-')
+  if '-' in squishlib.progName:
+    (squishlib.progName, command) = squishlib.progName.split('-')
   elif len(sys.argv) > 1:
     command_name = sys.argv[1]
   else:
     showSquishUsage()
     sys.exit(1)
 
-  if not command_name in squish.commands.keys():
+  if not command_name in squishlib.commands.keys():
     print '%s is not a valid command.' % command_name
 
     showSquishUsage()
     sys.exit(1)
 
-  cmd = squish.commands[command_name]()
+  cmd = squishlib.commands[command_name]()
   result = cmd.runCommand()
 
   sys.exit(result)

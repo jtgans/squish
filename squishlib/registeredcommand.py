@@ -25,7 +25,7 @@ import traceback
 
 import yaml
 
-import squish
+import squishlib
 
 
 class RegisteredCommand(type):
@@ -35,9 +35,9 @@ class RegisteredCommand(type):
   '''
 
   _required_attributes = [
-    '_command_name',
-    '_synopsis',
-    '_usage'
+    'command_name',
+    'synopsis',
+    'usage'
     ]
 
   def __init__(cls, name, bases, dct):
@@ -51,4 +51,4 @@ class RegisteredCommand(type):
                               'attribute defined.') % [base.__name__, attr]
 
       # If we passed, add the new command to the registered commands list.
-      squish.commands[dct['_command_name']] = cls
+      squishlib.commands[dct['command_name']] = cls
