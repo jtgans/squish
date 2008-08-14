@@ -1,0 +1,7 @@
+Squish: The stupid bug tracker
+==============================
+
+Requirements
+------------
+
+PyYAML (python-yaml on Debian-derived distributions)
