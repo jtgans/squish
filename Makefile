@@ -15,7 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 PY_MODULES     := $(wildcard lib/squish/*.py)
-PY_SOURCE      := $(wildcard src/*.py)
+PY_SOURCE      := src/squish
 PY_UNIT_TESTS  := $(wildcard tests/unit/*_test.py)
 
 ifndef PYCHECKER
@@ -44,9 +44,8 @@ unit-tests:
 	done
 
 check:
-	-cd lib; $(PYCHECKER) -F ../pycheckerrc squish/__init__.py; cd ..
-	-$(PYCHECKER) -F pycheckerrc $(PY_SOURCE)
-	-$(PYCHECKER) -F pycheckerrc $(PY_UNIT_TESTS)
+	pylint --rcfile pylintrc $(PY_SOURCE)
+	pylint --rcfile pylintrc squishlib
 
 fixspaces:
 	sed -i -r 's/^[ ]+$$//' $(PY_MODULES) $(PY_SOURCE) $(PY_TESTS)
