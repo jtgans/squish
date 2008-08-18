@@ -64,11 +64,11 @@ class Command(Debuggable):
   _userConfig = None
 
   def __init__(self):
-    self._doOptParse()
+    self._parseArguments()
 
     self._siteDir = self._findSiteDir()
-    self._loadUserConfig()
     self._loadSiteConfig()
+    self._loadUserConfig()
 
     # Do some final cleanup with the options to make sure they're sane.
     if self._flags.use_pager:
@@ -150,7 +150,7 @@ class Command(Debuggable):
       sys.stderr.write('Unable to find squish bug repository.')
       sys.exit(1)
 
-  def _doOptParse(self):
+  def _parseArguments(self):
     # Generate our default values for the options
     pager_cmd = (os.environ.has_key('PAGER') and os.environ['PAGER']) or ''
 
@@ -178,6 +178,9 @@ class Command(Debuggable):
 
     # Go!
     (self._flags, self._args) = self._parser.parse_args()
+
+    # Strip off the command name from the args -- we don't need it.
+    self._args = self._args[1:]
 
   def _getVersionString(self):
     version = '.'.join(map(str, __version__))
