@@ -22,8 +22,6 @@ Squish: The stupid bug tracker.
 
 import traceback
 
-import squishlib
-
 
 def _getCaller(backsteps=1):
   '''

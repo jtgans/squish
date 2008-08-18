@@ -21,26 +21,67 @@
 Squish: The stupid bug tracker.
 '''
 
-import traceback
+import os
+import sys
 import optparse
 
 import yaml
 
-import squishlib
+from . import showSquishUsage
+from . import generateSquishUsage
+from . import commands
+from . import progName
+from command import Command
 
 
-class HelpCommand(squishlib.Command):
+class HelpCommand(Command):
   '''
-  Get the help documentation on other commands.
-
-  Simply call this command with an argument of the command you want further
-  information on, and it will print it out for you on stdout.
+  Command to get help on other commands.
   '''
 
   command_name = 'help'
   synopsis     = 'Get help on other commands.'
-  usage        = 'help <command>'
+  usage        = 'help [<options>] <command>'
+
+  def __init__(self):
+    Command.__init__(self)
+
+  def _setupOptParse(self):
+    pass
 
   def runCommand(self):
-    print 'self._optparser is %s' % self._optparser
-    print 'Woo! I ran!'
+    if len(self._args) < 2:
+      showSquishUsage(self._parser.format_help())
+      return 1
+
+    cmd = sys.argv[2]
+
+    if cmd not in commands.keys():
+      print '%s is not a valid command.\n'
+      showSquishUsage(self._parser.format_help())
+      return 1
+
+    cmd = commands[cmd]()
+    print '%s - %s\n\n%s' % (cmd.command_name,
+                             cmd.synopsis,
+                             cmd.generateHelp())
+
+    return 0
+
+  def generateHelp(self):
+    formatters = {
+      'progname': progName,
+      'option_help': self._parser.format_help()
+      }
+
+    return '''
+Usage: %(progname)s help [<options>] <command>
+
+Where <command> is one of the available commands squish has.
+
+Simply call this command with an argument of the command you want further
+information on, and it will print it out for you on stdout. Given no
+arguments, this command will print help containing a listing of global
+options and registered commands.
+
+%(option_help)s''' % formatters

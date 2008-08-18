@@ -31,4 +31,13 @@ class Bug(object):
   A single bug.
   '''
 
-  pass
+  summary = None
+  description = None
+  reporter = None
+  assignee = None
+  version = None
+  priority = None
+  tags = []
+  cc = []
+  worklog = []
+  duplicate = None

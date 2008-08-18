@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- python -*-
+# pylint: disable-msg=W0122
 #
 # Copyright (C) 2008  Google, Inc. All Rights Reserved.
 #
@@ -30,7 +31,38 @@ import os
 __version__  = (0, 0)
 
 progName = None
-commands = {}
+
+
+def generateSquishUsage(additional_help=None):
+  '''
+  Generate the usage string for the general squish executable.
+  '''
+
+  usage  = 'Usage: \n'
+  usage += '  %s <command> [<options>] [<arguments>]\n\n' % progName
+  usage += 'Commands registered:\n\n'
+
+  names = commands.keys()
+  names.sort()
+
+  for name in names:
+    usage += '  %s\n    %s\n' % (commands[name].usage, commands[name].synopsis)
+
+  if additional_help:
+    usage += '\n%s' % additional_help
+
+  usage += ('\nUse %s help <command> for more information on a '
+            'command.\n') % progName
+
+  return usage
+
+
+def showSquishUsage(additional_help=None):
+  '''
+  Print out the usage for the general squish executable.
+  '''
+
+  print generateSquishUsage(additional_help)
 
 
 # Force importing all of the classes into the toplevel squish module namespace.

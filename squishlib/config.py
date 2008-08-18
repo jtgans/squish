@@ -21,10 +21,6 @@
 Squish: The stupid bug tracker.
 '''
 
-import traceback
-
-import yaml
-
 
 class Config(object):
   '''
