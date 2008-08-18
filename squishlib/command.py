@@ -26,12 +26,17 @@ import os.path
 import sys
 import optparse
 
-from . import progName
-from . import __version__
+import yaml
+
+from squishlib import progName
+from squishlib import __version__
 
 from debuggable import Debuggable
 from registeredcommand import RegisteredCommand
 from registeredcommand import commands
+
+import config
+import userconfig
 
 
 class Command(Debuggable):
@@ -46,11 +51,106 @@ class Command(Debuggable):
   synopsis     = ''
   usage        = ''
 
-  _parser = None
-  _args   = None
-  _flags  = None
+  # Override this to allow a command to work without a squish bug repository
+  # being present.
+  requireSiteConfig = True
+
+  _parser     = None
+  _args       = None
+  _flags      = None
+
+  _siteDir    = None
+  _config     = None
+  _userConfig = None
 
   def __init__(self):
+    self._doOptParse()
+
+    self._siteDir = self._findSiteDir()
+    self._loadUserConfig()
+    self._loadSiteConfig()
+
+    # Do some final cleanup with the options to make sure they're sane.
+    if self._flags.use_pager:
+      if (not sys.stdout.isatty() or
+          not os.path.exists(self._flags.pager_cmd)):
+        self._flags.use_pager = False
+
+    self._debug_mode = self._flags.debug
+    self._setName(self.command_name)
+
+  def _findSiteDir(self):
+    '''
+    Walk the directory tree from the current directory to the root directory,
+    looking for a directory called bugs with a file in it called config.yaml.
+    '''
+
+    curpath = os.path.abspath('.')
+
+    while curpath != '/':
+      if (os.path.isdir(curpath + '/bugs') and
+          os.path.isfile(curpath + '/bugs/config.yaml')):
+        return curpath + '/bugs'
+
+      curpath = os.path.abspath(curpath + '/..')
+
+    return None
+
+  def _loadUserConfig(self):
+    '''
+    Load in the user's preferences config. If none exists, just initialize to
+    the default and write it out to ~/.squishrc.yaml
+    '''
+
+    homedir = os.environ['HOME']
+    rcfile  = '%s/.squish.yaml' % homedir
+
+    if os.path.isfile(rcfile):
+      try:
+        stream = file(rcfile, 'r')
+        self._userConfig = yaml.load(stream)
+        stream.close()
+      except Exception, e:
+        sys.stderr.write('Unable to read from ~/.squish.yaml: %s\n' % str(e))
+        sys.exit(1)
+
+    else:
+      self._userConfig = userconfig.UserConfig()
+
+      try:
+        stream = file(rcfile, 'w')
+        yaml.dump(self._userConfig, stream, default_flow_style=False)
+        stream.close()
+      except Exception, e:
+        sys.stderr.write('Unable to create ~/.squish.yaml: %s\n' % str(e))
+        sys.exit(1)
+
+  def _loadSiteConfig(self):
+    '''
+    Load in the site-specific config file. Should be in self._siteDir +
+    '/config.yaml'. If no config.yaml file exists, throw an error and exit.
+    '''
+
+    if self._siteDir:
+      if not os.path.isfile(self._siteDir + '/config.yaml'):
+        sys.stderr.write('Directory %s is not a squish bug repository.' %
+                        self._siteDir)
+        sys.exit(1)
+
+      try:
+        stream = file(self._siteDir + '/config.yaml', 'r')
+        self._config = yaml.load(stream)
+        stream.close()
+      except Exception, e:
+        sys.stderr.write('Unable to load %s/config.yaml: %s\n' % (self._siteDir,
+                                                                 str(e)))
+        sys.exit(1)
+
+    elif self.requireSiteConfig:
+      sys.stderr.write('Unable to find squish bug repository.')
+      sys.exit(1)
+
+  def _doOptParse(self):
     # Generate our default values for the options
     pager_cmd = (os.environ.has_key('PAGER') and os.environ['PAGER']) or ''
 
@@ -78,15 +178,6 @@ class Command(Debuggable):
 
     # Go!
     (self._flags, self._args) = self._parser.parse_args()
-
-    # Do some final cleanup with the options to make sure they're sane.
-    if self._flags.use_pager:
-      if (not sys.stdout.isatty() or
-          not os.path.exists(self._flags.pager_cmd)):
-        self._flags.use_pager = False
-
-    self._debug_mode = self._flags.debug
-    self._setName(self.command_name)
 
   def _getVersionString(self):
     version = '.'.join(map(str, __version__))
