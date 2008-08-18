@@ -26,11 +26,11 @@ import yaml
 
 STATES = [
   'open',
-  'reproducable',
+  'reproducible',
   'in-progress',
   'duplicate',
   'invalid',
-  'non-reproducable',
+  'non-reproducible',
   'fixed',
   'wont-fix'
   ]
