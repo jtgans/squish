@@ -27,10 +27,11 @@ import optparse
 
 import yaml
 
-from . import showSquishUsage
-from . import generateSquishUsage
-from . import commands
-from . import progName
+from squishlib import showSquishUsage
+from squishlib import generateSquishUsage
+from squishlib import commands
+from squishlib import progName
+
 from command import Command
 
 
@@ -42,6 +43,9 @@ class HelpCommand(Command):
   command_name = 'help'
   synopsis     = 'Get help on other commands.'
   usage        = 'help [<options>] <command>'
+
+  # This command doesn't need a site config to function.
+  requireSiteConfig = False
 
   def __init__(self):
     Command.__init__(self)
