@@ -21,28 +21,52 @@
 Squish: The stupid bug tracker.
 '''
 
+import os
+import pwd
+import posix
+import socket
+
 import yaml
 
 
-class Config(yaml.YAMLObject):
+class UserConfig(yaml.YAMLObject):
   '''
   Yaml class to handle serialization of the public configuration of the bug
   tracker. See UserConfig for user-specific private settings.
   '''
 
-  yaml_tag = u'!Config'
+  yaml_tag = u'!UserConfig'
 
   def __init__(self):
-    self.new_pre_scripts = None
-    self.new_post_scripts = None
-    self.add_to_cc = None
+    self.email = self.getEmailAddress()
 
-    self.priorities = [
-      'feature-request',
-      'minor',
-      'major',
-      'severe',
-      'blocker',
-      'crash' ]
+  def getUsername(self):
+    if os.environ.has_key('SQUISH_USER'):
+      return os.environ['SQUISH_USER']
+    elif os.environ.has_key('USER'):
+      return os.environ['USER']
+    else:
+      uid = posix.getuid()
+      return pwd.getpwuid(uid)[0]     # first field is username
 
-    self.email_on = [ 'all' ]
+    return None
+
+  def getFullname(self):
+    if os.environ.has_key('SQUISH_NAME'):
+      return os.environ['SQUISH_NAME']
+    else:
+      uid = posix.getuid()
+      return pwd.getpwuid(uid)[4]     # fifth field is fullname
+
+    return None
+
+  def getEmailAddress(self):
+    if os.environ.has_key('SQUISH_EMAIL'):
+      email = os.environ['SQUISH_EMAIL']
+    elif os.environ.has_key('EMAIL'):
+      email = os.environ['EMAIL']
+
+    hostname = socket.gethostname()
+    return '"%s" <%s@%s>' % (self.getFullname(),
+                             self.getUsername(),
+                             hostname)
