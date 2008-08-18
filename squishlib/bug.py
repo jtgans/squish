@@ -21,23 +21,35 @@
 Squish: The stupid bug tracker.
 '''
 
-import traceback
-
 import yaml
 
 
-class Bug(object):
+STATES = [
+  'open',
+  'reproducable',
+  'in-progress',
+  'duplicate',
+  'invalid',
+  'non-reproducable',
+  'fixed',
+  'wont-fix'
+  ]
+
+class Bug(yaml.YAMLObject):
   '''
   A single bug.
   '''
 
-  summary = None
-  description = None
-  reporter = None
-  assignee = None
-  version = None
-  priority = None
-  tags = []
-  cc = []
-  worklog = []
-  duplicate = None
+  yaml_tag = u'!bug'
+
+  def __init__(self):
+    self.summary = None
+    self.description = None
+    self.reporter = None
+    self.assignee = None
+    self.version = None
+    self.priority = None
+    self.tags = []
+    self.cc = []
+    self.worklog = []
+    self.duplicate = None

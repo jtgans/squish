@@ -21,14 +21,23 @@
 Squish: The stupid bug tracker.
 '''
 
-import traceback
-
+import re
 import yaml
 
 
-class Worklog(object):
+class Worklog(yaml.YAMLObject):
   '''
   A single worklog entry. Bugs typically have zero or more of these.
   '''
 
-  pass
+  yaml_tag = '!Worklog'
+
+  def __init__(self):
+    self.poster = None
+    self.date = None
+    self.description = None
+
+
+# Make sure that when we emit stuff that the worklog shows up properly without
+# extra annoying tags.
+yaml.add_path_resolver(u'!Worklog', (u'worklog', [list, False]))
