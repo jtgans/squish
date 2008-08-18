@@ -1,0 +1,146 @@
+Squish: The stupid bug tracker
+##############################
+
+
+
+Bug file format
+===============
+
+The bug filename is an SHA-1 hash of its original contents when it
+was reported the first time. Each bug has the following contents
+inside:
+
+  %YAML 1.1
+  ---
+  summary: A short, one-line summary of the bug.
+  description: |
+    A multiple line description of what the bug is, how it
+    was generated, etc.
+  reporter: "Reporter of Bug" <reporter@example.com>
+  assignee: "Assignee of Bug" <assignee@example.com>
+  version: v0.1.1 (arbitrary string)
+  priority: feature-request
+  tags:
+    - list
+    - of
+    - tags
+  cc:
+    - "a list" <alist@example.com>
+    - "of email addresses" <emailaddresses@example.com>
+    - "to send updates to" <sendupdatesto@example.com>
+  worklog:
+    - poster: "Poster of Entry" <poster@example.com>
+      date: yyyy-mm-ddThh:mm:ssZ
+      description: |
+        A multiple line description of the update. Newest
+        posts are at the bottom of the file, making it
+        append-only. All times are in GMT.
+    - poster: "Poster of Entry" <poster@example.com>
+      date: yyyy-mm-ddThh:mm:ssZ
+      description: |
+        A multiple line description of the update.
+    
+Priority must be one of the priorities listed in config.yaml, going
+from least severe to most severe. If priorities is not listed in
+config.yaml squish assumes the following:
+
+  - feature-request
+  - minor
+  - major
+  - severe
+  - blocker
+  - crash
+
+Templates (if specified) should be in the config.yaml. config.yaml
+contains the following information:
+
+  %YAML 1.1
+  ---
+  new-pre-scripts:
+    - /path/to/script/to/include/in/description
+  new-post-scripts:
+    - /path/to/script/to/pass/output/to
+  add-to-cc:
+    - "A list of email addresses" <mailinglist@example.com>
+  priorities:
+    - feature-request
+    - minor
+    - major
+    - severe
+    - blocker
+    - crash
+  email-on:
+    - all
+    - <state>
+    - worklog
+  new-description-template: |
+    A multi-line description template. Use the magic sequence
+    [pre-script-output] to include the output from the pre-scripts in
+    the description template.
+
+
+Scripts
+=======
+
+The main porcelain for the bug reporting system is "squish". Each of
+the following script names are called in typical git fashion as either
+`squish $cmd' or `squish-$cmd'. In practice, `squish-$cmd' is just a
+symlink to the main squish binary.
+
+report
+  - Reads through $srctree/bugs/config.yml
+  - Runs the pre-scripts and captures the output.
+  - Creates a temp file in /tmp containing the
+    new-description-template and the pre-script-output if included in
+    the new-description-template.
+  - Spawns the users' $EDITOR.
+  - If no changes were made to the bug, it aborts like cvs, git, etc.
+  - Massages the template into a full-on bug report as above, and
+    generates the ultimate filename as an SHA-1 of its contents.
+  - Writes the bug into $srctree/bugs/open/$sha1.
+
+list [--state=<state>,<state>,...] [<bugnum-glob-or-partial>]
+  - List the bug numbers, states, assignees and summaries to stdout.
+    - If state is not given, assume open.
+    - If bugnum-glob-or-partial is given:
+      - If shell-like glob wildcards are present, and assume shell
+        glob semantics and return all matching bugs.
+      - If only the partial is given and no wildcards are present,
+        assume ${partial}*
+
+show <bugnum-partial>
+  - List the bug in human-readable format.
+
+search [--fields=<field>,<field>,...]
+       [--state=<state>,<state>,...] <regex-to-match>
+  - List bug numbers, states, assignees and summaries that match the
+    string given, in the given fields.
+    - If fields is not provided, assume summary, description, and
+      worklog.
+    - If state is not provided, assume all valid states.
+
+set-state <bugnum-partial> <state> [<dupeof-if-duplicate>]
+  - State must be one of invalid, non-reproducable, fixed, or wont-fix.
+  - Moves the bug file into the appropriate state.
+    - If state is not specified, assume fixed.
+    - If state is duplicate, add a duplicate-of field with the
+      dupeof-if-duplicate value added.
+  - Move the bug into the appropriate state directory.
+  - Email the update to the appropriate list of people in the bug,
+    according to email-on list in config.yaml.
+
+update <bugnum-partial>
+  - Load in the 
+
+States
+======
+
+open:         bugs that have just come in.
+reproducable: bugs that have been verified as legit.
+in-progress:  bugs currently being worked on.
+
+duplicate:    bugs that are duplicates of other bugs.
+invalid:      bugs judged to be incomplete or "it doesn't work"
+non-reproducable: bugs that can't be reproduced.
+fixed:        fixed bugs.
+wont-fix:     bugs that won't be fixed.
