@@ -46,7 +46,8 @@ def generateSquishUsage(additional_help=None):
   names.sort()
 
   for name in names:
-    usage += '  %s\n    %s\n\n' % (commands[name].usage, commands[name].synopsis)
+    usage += '  %s\n    %s\n\n' % (commands[name].usage,
+                                   commands[name].synopsis)
 
   if additional_help:
     usage += '%s\n' % additional_help
