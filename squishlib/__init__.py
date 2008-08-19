@@ -67,6 +67,8 @@ def showSquishUsage(additional_help=None):
 
 # Force importing all of the classes into the toplevel squish module namespace.
 for filename in os.listdir(__path__[0]):
-  if '__init__' not in filename and '.py' in filename:
+  if ('__init__' not in filename
+      and '.py' in filename
+      and '#' not in filename):
     filename, ext = filename.split('.')    # Strip off the extension
     exec 'from %s import *' % filename     # Then import it
