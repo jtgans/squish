@@ -35,12 +35,27 @@ STATES = [
   'wont-fix'
   ]
 
+
+class BugValidationError(Exception):
+  '''
+  An error thrown when a bug does not validate.
+  '''
+
+  pass
+
+
 class Bug(yaml.YAMLObject):
   '''
   A single bug.
   '''
 
   yaml_tag = u'!bug'
+
+  _nonemptyFields = [
+    'summary',
+    'description',
+    'reporter'
+    ]
 
   def __init__(self):
     self.summary = None
@@ -53,3 +68,9 @@ class Bug(yaml.YAMLObject):
     self.cc = []
     self.worklog = []
     self.duplicate = None
+
+  def validate(self):
+    for field in self._nonemptyFields:
+      if (not self.__dict__.has_key(field)
+          or not self.__dict__[field]):
+        raise BugValidationError()
