@@ -26,6 +26,12 @@ import re
 import yaml
 
 
+EMAIL_PATTERN = re.compile(
+  (ur'("[^"]+")? ?'
+   ur'<?([a-zA-Z0-9.+-]+)@'
+   ur'([a-zA-Z0-9.+-]+)>?'))
+
+
 class EmailValidationError(Exception):
   '''
   An exception for when an email address does not validate.
@@ -42,10 +48,6 @@ class EmailAddress(yaml.YAMLObject):
 
   yaml_tag = u'!emailaddress'
 
-  _emailPattern = re.compile((r'("[^"]+")? ?'
-                              r'<?([a-zA-Z0-9.+-]+)@'
-                              r'([a-zA-Z0-9.+-]+)>?'))
-
   _nonemptyFields = [
     'user',
     'domain'
@@ -60,7 +62,7 @@ class EmailAddress(yaml.YAMLObject):
       self.comment = comment
 
   def _parseEmailAddress(self, address):
-    match = self._emailPattern.match(address)
+    match = EMAIL_PATTERN.match(address)
 
     if match == None:
       raise EmailValidationError('Address %s is not a valid email address.'
@@ -97,3 +99,8 @@ class EmailAddress(yaml.YAMLObject):
 
   def __repr__(self):
     return 'EmailAddress(\'%s\')' % str(self)
+
+
+# Make sure that when we emit stuff taht the email addresses show up properly
+# without extra annoying tags.
+yaml.add_implicit_resolver(u'!emailaddress', EMAIL_PATTERN)
