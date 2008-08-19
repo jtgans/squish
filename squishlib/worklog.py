@@ -24,6 +24,8 @@ Squish: The stupid bug tracker.
 import re
 import yaml
 
+import emailaddress
+
 
 class Worklog(yaml.YAMLObject):
   '''
