@@ -21,6 +21,10 @@
 Squish: The stupid bug tracker.
 '''
 
+import re
+import sys
+import cStringIO
+
 import yaml
 
 import emailaddress
@@ -59,6 +63,9 @@ class Bug(yaml.YAMLObject):
     'reporter'
     ]
 
+  _separatorPattern = re.compile(ur'^---[\w\s]+---$')
+  _headerPattern    = re.compile(ur'^(\w+): (.*)$')
+
   def __init__(self):
     self.summary = None
     self.description = None
@@ -71,8 +78,134 @@ class Bug(yaml.YAMLObject):
     self.worklog = []
     self.duplicate = None
 
+  def _varOrBlank(self, var):
+    if var:
+      if isinstance(var, list):
+        return ', '.join(var)
+      else:
+        return var
+
+    return ''
+
+  def generateReportTemplate(self):
+    oldstdout = sys.stdout
+    sys.stdout = cStringIO.StringIO()
+
+    print 'Reporter: %s'  % self.reporter
+    print 'CC: %s'        % self._varOrBlank(self.cc)
+    print 'Version: %s'   % self._varOrBlank(self.version)
+    print 'Priority: %s'  % self._varOrBlank(self.priority)
+    print 'Tags: %s'      % self._varOrBlank(self.tags)
+    print 'Summary: %s'   % self._varOrBlank(self.summary)
+    print '---problem description follows this line---'
+    print
+    print '# Describe the bug and the steps you took to cause the it here.'
+    print '#'
+    print '# Lines beginning with hash marks (like these) are ignored and will'
+    print '# not be included in the description of the bug.'
+    print '#'
+    print '# Fields that are absolutely required are Reporter, Summary, and the'
+    print '# problem description. If any one of those three fields are left'
+    print '# empty, the bug report will be aborted.'
+    print '#'
+    print '# If this file remains unchanged, the bug report will be aborted.'
+
+    report = sys.stdout.getvalue()
+    sys.stdout.close()
+    sys.stdout = oldstdout
+
+    return report
+
+  def parseReportTemplate(self, report):
+    '''
+    Given a bug report template of the form:
+
+       Header: value
+       ...
+       ---separator---
+       Description body
+
+    Parse the values into this bug, and validate that the values are correct.
+    '''
+
+    # Toggle so that when we pass the separator we can start consuming the
+    # body.
+    in_body = False
+
+    # Generate a list of valid headers
+    valid_headers = filter(lambda key: not key.startswith('_'),
+                           self.__dict__.keys())
+
+    # Split the report into seperate lines
+    report = report.splitlines()
+
+    # Iterate over the headers and set our internal values until we reach the
+    # dividing line.
+    for line in report:
+      if self._separatorPattern.match(line):
+        self.description = ''
+        in_body = True
+        continue          # skip the separator
+
+      if not in_body:
+        splitpos = line.find(':')
+
+        if splitpos == -1:
+          raise BugValidationError('%s is not a valid line.' % line)
+
+        key = line[:splitpos].strip().lower()
+        val = line[splitpos+1:].strip()
+
+        if key not in valid_headers:
+          raise BugValidationError('Line %s is not a known line.' % key)
+
+        if val == '':
+          self.__dict__[key] = None
+        else:
+          self.__dict__[key] = val
+
+      else:
+        if not line.startswith('#'):
+          self.description += line + '\n'
+
+    # Clean up the description of trailing and leading whitespace.
+    self.description = self.description.strip(u' \t\r\f\v\n')
+
+    if self.description == '':
+      self.description = None
+
+    # Convert the strings we just ingested to their proper values.
+    self._convertValuesToTypes()
+
+    print repr(self.__dict__)
+
+    # Verify we have a valid bug
+    self.validate()
+
+  def _convertValuesToTypes(self):
+    # First, convert all email strings to EmailAddresses
+    for key in ('cc', 'reporter'):
+      var = self.__dict__[key]
+      temp = []
+
+      if isinstance(var, list) or isinstance(var, str):
+        # Convert strings of the form "foo, bar, baz" into a list of strings.
+        if isinstance(var, str):
+          var = var.split(',')
+          var = map(lambda s: s.strip(), var)
+
+        for item in var:
+          if isinstance(item, str):
+            temp.append(emailaddress.EmailAddress(item))
+          elif isinstance(item, emailaddress.EmailAddress):
+            temp.append(item)
+          else:
+            raise BugValidationError('%s is not a valid email address.' % item)
+
+      self.__dict__[key] = temp
+
   def validate(self):
     for field in self._nonemptyFields:
       if (not self.__dict__.has_key(field)
           or not self.__dict__[field]):
-        raise BugValidationError()
+        raise BugValidationError('%s is not set to a value' % field)
