@@ -103,7 +103,7 @@ class Command(Debuggable):
     '''
 
     homedir = os.environ['HOME']
-    rcfile  = '%s/.squish.yaml' % homedir
+    rcfile  = '%s/.squishrc' % homedir
 
     if os.path.isfile(rcfile):
       try:
@@ -111,7 +111,7 @@ class Command(Debuggable):
         self._userConfig = yaml.load(stream)
         stream.close()
       except Exception, e:
-        sys.stderr.write('Unable to read from ~/.squish.yaml: %s\n' % str(e))
+        sys.stderr.write('Unable to read from ~/.squishrc: %s\n' % str(e))
         sys.exit(1)
 
     else:
@@ -122,7 +122,7 @@ class Command(Debuggable):
         yaml.dump(self._userConfig, stream, default_flow_style=False)
         stream.close()
       except Exception, e:
-        sys.stderr.write('Unable to create ~/.squish.yaml: %s\n' % str(e))
+        sys.stderr.write('Unable to create ~/.squishrc: %s\n' % str(e))
         sys.exit(1)
 
   def _loadSiteConfig(self):
