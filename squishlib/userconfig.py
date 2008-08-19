@@ -22,6 +22,7 @@ Squish: The stupid bug tracker.
 '''
 
 import os
+import sys
 import pwd
 import posix
 import socket
@@ -39,6 +40,17 @@ class UserConfig(yaml.YAMLObject):
 
   def __init__(self):
     self.email = self.getEmailAddress()
+    self.editor = self.getUserEditor()
+
+  def getUserEditor(self):
+    if os.environ.has_key('SQUISH_EDITOR'):
+      return os.environ['SQUISH_EDITOR']
+    elif os.environ.has_key('EDITOR'):
+      return os.environ['EDITOR']
+    elif self.editor:
+      return self.editor
+
+    return None
 
   def getUsername(self):
     if os.environ.has_key('SQUISH_USER'):
