@@ -23,6 +23,8 @@ Squish: The stupid bug tracker.
 
 import yaml
 
+import emailaddress
+
 
 STATES = [
   'open',
