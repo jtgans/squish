@@ -27,9 +27,12 @@ import yaml
 
 
 EMAIL_PATTERN = re.compile(
-  (ur'("[^"]+")? ?'
-   ur'<?([a-zA-Z0-9.+-]+)@'
-   ur'([a-zA-Z0-9.+-]+)>?'))
+  (ur'(?:"(?P<comment>.+)")?'           # "comment"
+   ur'[ \t]*'                           # whitespace
+   ur'(?P<angle><)?'                    # <
+   ur'(?P<username>[\w.+-]+)@'          # username@
+   ur'(?P<domain>[\w-]+(?:\.[\w-]+)+)'  # domain.com
+   ur'(?(angle)>)'))                    # >
 
 
 class EmailValidationError(Exception):
@@ -62,23 +65,27 @@ class EmailAddress(yaml.YAMLObject):
       self.comment = comment
 
   def _parseEmailAddress(self, address):
+    # Clean up any trailing and leading whitespace.
+    address.strip()
+
     match = EMAIL_PATTERN.match(address)
 
     if match == None:
       raise EmailValidationError('Address %s is not a valid email address.'
                                  % address)
 
-    groups = match.groups()
-
-    if ((len(groups) < 2)
-        or not groups[1]
-        or not groups[2]):
+    if len(match.groups()) < 3:    # Need username, domain, and the <
       raise EmailValidationError('Address %s is not a valid email address.'
                                  % address)
 
-    self.comment = groups[0]
-    self.user    = groups[1]
-    self.domain  = groups[2]
+    if (not match.group('username')
+        or not match.group('domain')):
+      raise EmailValidationError('Address %s is not a valid email address.'
+                                 % address)
+
+    self.comment = match.group('comment')
+    self.user    = match.group('username')
+    self.domain  = match.group('domain')
 
     self.validate()
 
