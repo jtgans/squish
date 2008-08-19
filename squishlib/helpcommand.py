@@ -54,7 +54,7 @@ class HelpCommand(Command):
     pass
 
   def runCommand(self):
-    if len(self._args) < 2:
+    if len(self._args) < 1:
       showSquishUsage(self._parser.format_help())
       return 1
 
