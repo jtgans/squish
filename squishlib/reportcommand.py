@@ -23,7 +23,9 @@ Squish: The stupid bug tracker.
 
 import os
 import sys
+import sha
 import glob
+import popen2
 import optparse
 
 import yaml
@@ -52,7 +54,118 @@ class ReportCommand(Command):
     pass
 
   def runCommand(self):
+    # Prepare a new bug report
+    bugreport = bug.Bug()
+    bugreport.reporter = self._userConfig.email
+
+    if self._config.add_to_cc:
+      bugreport.cc.append(self._config.add_to_cc)
+
+    template = bugreport.generateReportTemplate()
+
+    # Let the user and the scripts have at the template
+    report = self.runScripts('pre', template)
+    report = self.spawnUserEditor(report)
+    report = self.runScripts('post', report)
+
+    try:
+      bugreport.parseReportTemplate(report)
+    except bug.BugValidationError, e:
+      sys.stderr.write('Bug report validation error.\n')
+      sys.stderr.write('%s\n' % str(e))
+      sys.stderr.write('bugreport.txt left behind.\n')
+      sys.exit(1)
+
+    # We have a valid bug report now. Dump it to a string so we can generate the
+    # sha-1 filename and dump it to the bugreport file.
+
+    yamldump = yaml.dump(bugreport, default_flow_style=False)
+    filename = sha.new(yamldump).hexdigest()
+
+    try:
+      stream = file(self._siteDir + '/open/' + filename, 'w')
+      stream.write(yamldump)
+      stream.close()
+    except OSError, e:
+      sys.stderr.write('Unable to open %s for writing: %s\n'
+                       % (self._siteDir + '/open/' + filename,
+                          str(e)))
+      sys.stderr.write('bugreport.txt left behind.\n')
+      sys.exit(1)
+
+    # Clean up after ourselves.
+
+    try:
+      os.unlink('bugreport.txt')
+    except OSError, e:
+      sys.stderr.write('Unable to unlink bugreport.txt: %s\n' % str(e))
+      sys.stderr.write('Non-fatal, but you\'ll need to unlink it if you want\n')
+      sys.stderr.write('to report another bug.\n')
+
+    print 'Bug %s created.' % filename
     return 0
+
+  def runScripts(self, kind, template):
+    if kind == 'pre':
+      scripts = self._config.new_pre_scripts
+    elif kind == 'post':
+      scripts = self._config.new_post_scripts
+
+    if self._config.new_pre_scripts:
+      for script in self._config.new_pre_scripts:
+        try:
+          (stdout, stdin) = popen2.popen4(script)
+
+          # Write out the template and get the result
+          stdin.write(template)
+          stdin.close()
+
+          template = '\n'.join(stdout.readlines())
+          stdout.close()
+        except OSError, e:
+          sys.stderr.write('Unable to execute %s: %s' % str(e))
+          sys.exit(1)
+
+    return template
+
+  def spawnUserEditor(self, template):
+    # Write out the bug report template so the editor can actually hack on it.
+    if not os.path.isfile('bugreport.txt'):
+      try:
+        stream = file('bugreport.txt', 'w')
+        stream.write(template)
+        stream.close()
+      except OSError, e:
+        sys.stderr.write('Unable to open bugreport.txt for writing: %s' % str(e))
+        sys.exit(1)
+
+    # Take the hash of the template so that we know if it's been changed we can
+    # go ahead and use it for the report.
+    orig_hash = sha.new(template).hexdigest()
+
+    # Spawn the user's editor here
+    os.system('%s bugreport.txt' % self._userConfig.editor)
+
+    # Read it back in
+    try:
+      stream = file('bugreport.txt', 'r')
+      report = ''.join(stream.readlines())
+      stream.close()
+    except OSError, e:
+      sys.stderr.write('Unable to open bugreport.txt for reading: %s' % str(e))
+      sys.stderr.write('bugreport.txt has been left behind.\n')
+      sys.exit(1)
+
+    # Generate the new hash of the report
+    new_hash = sha.new(report).hexdigest()
+
+    # Verify the hash changed
+    if orig_hash == new_hash:
+      sys.stderr.write('Bug report unchanged from template -- aborting.\n')
+      sys.stderr.write('bugreport.txt has been left behind.\n')
+      sys.exit(1)
+
+    return report
 
   def generateHelp(self):
     formatters = {
@@ -64,5 +177,9 @@ class ReportCommand(Command):
 Usage: %(progname)s report [<options>]
 
 Report a new bug.
+
+Note that this command spawns an editor to edit the report template. If the
+template is not changed from the generated report, the bug report will be
+aborted.
 
 %(option_help)s''' % formatters
