@@ -133,7 +133,7 @@ class Command(Debuggable):
 
     if self._siteDir:
       if not os.path.isfile(self._siteDir + '/config.yaml'):
-        sys.stderr.write('Directory %s is not a squish bug repository.' %
+        sys.stderr.write('Directory %s is not a squish bug repository.\n' %
                         self._siteDir)
         sys.exit(1)
 
@@ -147,7 +147,7 @@ class Command(Debuggable):
         sys.exit(1)
 
     elif self.requireSiteConfig:
-      sys.stderr.write('Unable to find squish bug repository.')
+      sys.stderr.write('Unable to find squish bug repository.\n')
       sys.exit(1)
 
   def _parseArguments(self):
