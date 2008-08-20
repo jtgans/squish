@@ -22,6 +22,7 @@ Squish: The stupid bug tracker.
 '''
 
 import re
+import sys
 
 import yaml
 
@@ -64,6 +65,15 @@ class EmailAddress(yaml.YAMLObject):
       self.domain = domain
       self.comment = comment
 
+  @classmethod
+  def to_yaml(cls, dumper, data):
+    return dumper.represent_scalar(u'!emailaddress', u'%s' % str(data))
+
+  @classmethod
+  def from_yaml(cls, loader, node):
+    value = loader.construct_scalar(node)
+    return EmailAddress(value)
+
   def _parseEmailAddress(self, address):
     # Clean up any trailing and leading whitespace.
     address.strip()
@@ -105,9 +115,10 @@ class EmailAddress(yaml.YAMLObject):
       return '<%s@%s>' % (self.user, self.domain)
 
   def __repr__(self):
-    return 'EmailAddress(\'%s\')' % str(self)
+    return str(self)
 
 
 # Make sure that when we emit stuff taht the email addresses show up properly
 # without extra annoying tags.
+
 yaml.add_implicit_resolver(u'!emailaddress', EMAIL_PATTERN)
