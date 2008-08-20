@@ -24,6 +24,7 @@ Squish: The stupid bug tracker.
 import os
 import os.path
 import sys
+import sha
 import glob
 import optparse
 
