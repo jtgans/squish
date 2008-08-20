@@ -36,6 +36,8 @@ from command import Command
 
 import config
 import bug
+import worklog
+import emailaddress
 
 
 class ReportCommand(Command):
@@ -71,8 +73,7 @@ class ReportCommand(Command):
     try:
       bugreport.parseReportTemplate(report)
     except bug.BugValidationError, e:
-      sys.stderr.write('Bug report validation error.\n')
-      sys.stderr.write('%s\n' % str(e))
+      sys.stderr.write('Bug report validation error: %s\n' % str(e))
       sys.stderr.write('bugreport.txt left behind.\n')
       sys.exit(1)
 
