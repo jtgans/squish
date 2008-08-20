@@ -1,0 +1,16 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Squish can report and manage bugs, but there''s no
+  current way to /edit/ a bug.
+
+  We need a `squish edit'' command to edit the main bits of a bug like
+
+  `squish report'' does for new bugs.'
+duplicate: null
+priority: major
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish edit implementation
+tags: ui, commands
+version: null
+worklog: []

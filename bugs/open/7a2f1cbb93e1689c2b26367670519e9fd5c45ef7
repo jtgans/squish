@@ -1,0 +1,12 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Squish currently lacks the ability to simply add additional
+  information to a bug in the worklog. We need that ability.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish add-worklog implementation
+tags: ui, commands
+version: null
+worklog: []

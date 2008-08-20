@@ -1,0 +1,16 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode "Currently squish list shows off a nice multi-line output.\
+  \ This is great for humans, but actually gets painful for scripts. We should add\
+  \ a --concise option that takes a list of field names and displays each bug -- one\
+  \ on each line -- with the selected fields. Ie:\n\n  $ squish list --concise=bugid,reporter,assignee\n\
+  \  xxxxxxxxxxxxxxx        \"Someone\" <at@zombie.com>        \"Someonelse\" <else@zorba.com>\n\
+  \  xxxxxxxxxxxxxxx        ..."
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish list should have a --concise option.
+tags: ui, commands
+version: null
+worklog: []

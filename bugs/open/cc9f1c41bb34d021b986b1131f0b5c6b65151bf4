@@ -1,0 +1,16 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'The current incarnation of squish report dumps the
+  contents of some internal
+
+  structure just before writing it to disk. This is noisy and annoying. Please
+
+  remove.'
+duplicate: null
+priority: minor
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish report outputs extra junk
+tags: ui, commands
+version: null
+worklog: []

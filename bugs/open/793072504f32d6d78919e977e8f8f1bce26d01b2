@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Although documented in the commands option help, the
+  take and resolve commands
+
+  currently do not update a bug''s worklog when asked to.'
+duplicate: null
+priority: major
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish take and squish resolve don't update worklogs
+tags: ui, commands
+version: null
+worklog: []

@@ -1,0 +1,18 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Squish currently lacks the ability to show anything
+  more than the quick few
+
+  lines summary of a bug. We need to implement `squish show <bug-or-partial>''
+
+  to properly show the full bits of information in human-readable format, and
+
+  show the worklog in descending time of post.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish show functionality
+tags: commands
+version: null
+worklog: []
