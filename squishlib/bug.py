@@ -229,3 +229,29 @@ class Bug(yaml.YAMLObject):
       if (not self.__dict__.has_key(field)
           or not self.__dict__[field]):
         raise BugValidationError('%s is not set to a value' % field)
+
+
+def loadBugFromFile(filename):
+  '''
+  Load a yaml stream from filename and de-serialize into a proper Bug instance.
+  '''
+
+  stream = file(filename, 'r')
+  result = yaml.load(stream)
+  stream.close()
+
+  if not result or not isinstance(result, Bug):
+    raise BugValidationError('invalid or corrupt bug')
+
+  result.validate()
+
+  return result
+
+def dumpBugToFile(bugreport, filename):
+  '''
+  Dump a yaml stream from a bugreport to the filename provided.
+  '''
+
+  stream = file(filename, 'w')
+  yaml.dump(bugreport, stream, default_flow_style=False)
+  stream.close()
