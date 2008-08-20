@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'There is currently no way to limit `squish list'' to
+  bugs at, above, or below a
+
+  specific priority. We should fix this.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish list should understand --priority-above, --priority-below, and --priority
+tags: ui, commands
+version: '0.1'
+worklog: []
