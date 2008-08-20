@@ -1,0 +1,16 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Currently ReportCommand manually loads and dumps bugs
+  to and from disk. It
+
+  should use the provided helper methods in the bug module to make things easier
+
+  on itself.'
+duplicate: null
+priority: minor
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish report should use bug.loadBugFromFile and bug.dumpBugToFile
+tags: cleanup
+version: '0.1'
+worklog: []

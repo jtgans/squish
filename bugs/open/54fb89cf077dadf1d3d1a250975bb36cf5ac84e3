@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'Building a package for squish is painful without a
+  debian dir in the upstream
+
+  sources. We should create a default package and include it in the repo.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish should have a debian dir for packaging
+tags: packaging
+version: '0.1'
+worklog: []

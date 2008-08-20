@@ -1,0 +1,18 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'When a squish comand generates output that is longer
+  than the controlling
+
+  terminal''s window size, squish is supposed to call out to the users''s defined
+
+  pager. Currently this does not happen. We should fix this in a general way
+
+  somehow.'
+duplicate: null
+priority: minor
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish commands don't use pagers
+tags: pager, output
+version: '0.1'
+worklog: []
