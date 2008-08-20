@@ -49,11 +49,19 @@ class ListCommand(Command):
     Command.__init__(self)
 
   def _setupOptParse(self):
-    self._parser.add_option('--state', dest='state',
+    self._parser.add_option('-s', '--state', dest='state',
                             action='store',
                             default='open,reproducible',
                             help=('Restrict listings to bugs in the states '
                                   'provided. [default=%default]'))
+
+    self._parser.add_option('-a', '--assigned-to', dest='assigned_to',
+                            action='store',
+                            default=None,
+                            help=('Restrict listings to bugs assigned to the '
+                                  'provided email address. Use the special '
+                                  'keyword "me" to refer to bugs assigned to '
+                                  'yourself.'))
 
   def runCommand(self):
     if len(self._args) > 0:
@@ -63,28 +71,39 @@ class ListCommand(Command):
 
     states = self._flags.state.split(',')
 
+    if 'all' in states:
+      states = bug.STATES
+
+    if self._flags.assigned_to:
+      if self._flags.assigned_to == 'me':
+        assigned_to = self._userConfig.email
+      else:
+        try:
+          assigned_to = emailaddress.EmailAddress(self._flags.assigned_to)
+        except emailaddress.EmailValidationError, e:
+          sys.stderr.write('%s\n' % str(e))
+          sys.exit(1)
+
     try:
       filenames = self.findBugsByNumOrPartial(partial, states)
     except TypeError, e:
-      sys.stderr.write('%s' % str(e))
+      sys.stderr.write('%s\n' % str(e))
       return 1
 
     for filename in filenames:
       try:
-        stream = file(filename, 'r')
-        result = yaml.load(stream)
-        stream.close()
+        result = bug.loadBugFromFile(filename)
+        bugnum = os.path.basename(filename)
+        state  = filename.split('/')[-2]
 
-        if (not result
-            or not isinstance(result, bug.Bug)):
-          raise bug.BugValidationError()
+        if self._flags.assigned_to:
+          if assigned_to != result.assignee:
+            continue
 
-        result.validate()
-
-        print 'bug %s' % os.path.basename(filename)
+        print 'bug %s'       % bugnum
         print 'Reporter: %s' % result.reporter
         print 'Assignee: %s' % result.assignee
-        print 'State:    %s' % filename.split('/')[-2] # State is second to last
+        print 'State:    %s' % state
         print
         print '    %s' % result.summary
         print
@@ -94,8 +113,8 @@ class ListCommand(Command):
         return 1
 
       except bug.BugValidationError, e:
-        sys.stderr.write('%s is corrupt or invalid\n' %
-                         os.path.basename(filename))
+        filename = filename.replace(self._siteDir + '/', '')
+        sys.stderr.write('%s is corrupt or invalid\n' % filename)
         continue
 
     return 0
