@@ -83,9 +83,9 @@ class ListCommand(Command):
           result.validate()
 
           print 'bug %s' % os.path.basename(filename)
-          print 'Reporter: % -40s' % result.reporter
-          print 'Assignee: % -40s' % result.assignee
-          print 'State:    % -40s' % state
+          print 'Reporter: %s' % result.reporter
+          print 'Assignee: %s' % result.assignee
+          print 'State:    %s' % state
           print
           print '    %s' % result.summary
           print
