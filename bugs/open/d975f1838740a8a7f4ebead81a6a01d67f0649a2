@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'squish help --version doesn''t properly report the
+  program name. In fact, most
+
+  commands that deal with the program name are outputting None instead of squish.'
+duplicate: null
+priority: minor
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish help --version doesn't properly report the program name
+tags: ui
+version: null
+worklog: []

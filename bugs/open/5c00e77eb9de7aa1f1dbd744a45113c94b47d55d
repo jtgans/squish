@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'squish should have hooks into the underlying SCM to
+  help add bugs to the commit
+
+  if necessary, etc.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish should have hooks into the underlying SCM
+tags: ease-of-use
+version: null
+worklog: []
