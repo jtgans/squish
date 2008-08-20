@@ -61,43 +61,42 @@ class ListCommand(Command):
     else:
       partial = '*'
 
-    for state in self._flags.state.split(','):
-      if state not in bug.STATES:
-        sys.stderr.write('%s is not one of the %s states\n' %
-                         (state, ', '.join(bug.STATES)))
+    states = self._flags.state.split(',')
+
+    try:
+      filenames = self.findBugsByNumOrPartial(partial, states)
+    except TypeError, e:
+      sys.stderr.write('%s' % str(e))
+      return 1
+
+    for filename in filenames:
+      try:
+        stream = file(filename, 'r')
+        result = yaml.load(stream)
+        stream.close()
+
+        if (not result
+            or not isinstance(result, bug.Bug)):
+          raise bug.BugValidationError()
+
+        result.validate()
+
+        print 'bug %s' % os.path.basename(filename)
+        print 'Reporter: %s' % result.reporter
+        print 'Assignee: %s' % result.assignee
+        print 'State:    %s' % filename.split('/')[-2] # State is second to last
+        print
+        print '    %s' % result.summary
+        print
+
+      except OSError, e:
+        sys.stderr.write('Unable to read %s: %s\n' % (filename, str(e)))
         return 1
 
-    for state in self._flags.state.split(','):
-      filenames = glob.glob('%s/%s/%s' % (self._siteDir, state, partial))
-
-      for filename in filenames:
-        try:
-          stream = file(filename, 'r')
-          result = yaml.load(stream)
-          stream.close()
-
-          if (not result
-              or not isinstance(result, bug.Bug)):
-            raise bug.BugValidationError()
-
-          result.validate()
-
-          print 'bug %s' % os.path.basename(filename)
-          print 'Reporter: %s' % result.reporter
-          print 'Assignee: %s' % result.assignee
-          print 'State:    %s' % state
-          print
-          print '    %s' % result.summary
-          print
-
-        except OSError, e:
-          sys.stderr.write('Unable to read %s: %s\n' % (filename, str(e)))
-          return 1
-
-        except bug.BugValidationError, e:
-          sys.stderr.write('%s is corrupt or invalid\n' %
-                           os.path.basename(filename))
-          continue
+      except bug.BugValidationError, e:
+        sys.stderr.write('%s is corrupt or invalid\n' %
+                         os.path.basename(filename))
+        continue
 
     return 0
 

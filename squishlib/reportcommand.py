@@ -67,7 +67,7 @@ class ReportCommand(Command):
 
     # Let the user and the scripts have at the template
     report = self.runScripts('pre', template)
-    report = self.spawnUserEditor(report)
+    report = self.spawnUserEditor(report, 'bugreport.txt')
     report = self.runScripts('post', report)
 
     try:
@@ -128,45 +128,6 @@ class ReportCommand(Command):
           sys.exit(1)
 
     return template
-
-  def spawnUserEditor(self, template):
-    # Write out the bug report template so the editor can actually hack on it.
-    if not os.path.isfile('bugreport.txt'):
-      try:
-        stream = file('bugreport.txt', 'w')
-        stream.write(template)
-        stream.close()
-      except OSError, e:
-        sys.stderr.write('Unable to open bugreport.txt for writing: %s' % str(e))
-        sys.exit(1)
-
-    # Take the hash of the template so that we know if it's been changed we can
-    # go ahead and use it for the report.
-    orig_hash = sha.new(template).hexdigest()
-
-    # Spawn the user's editor here
-    os.system('%s bugreport.txt' % self._userConfig.editor)
-
-    # Read it back in
-    try:
-      stream = file('bugreport.txt', 'r')
-      report = ''.join(stream.readlines())
-      stream.close()
-    except OSError, e:
-      sys.stderr.write('Unable to open bugreport.txt for reading: %s' % str(e))
-      sys.stderr.write('bugreport.txt has been left behind.\n')
-      sys.exit(1)
-
-    # Generate the new hash of the report
-    new_hash = sha.new(report).hexdigest()
-
-    # Verify the hash changed
-    if orig_hash == new_hash:
-      sys.stderr.write('Bug report unchanged from template -- aborting.\n')
-      sys.stderr.write('bugreport.txt has been left behind.\n')
-      sys.exit(1)
-
-    return report
 
   def generateHelp(self):
     formatters = {

@@ -24,6 +24,7 @@ Squish: The stupid bug tracker.
 import os
 import os.path
 import sys
+import glob
 import optparse
 
 import yaml
@@ -35,6 +36,7 @@ from debuggable import Debuggable
 from registeredcommand import RegisteredCommand
 from registeredcommand import commands
 
+import bug
 import config
 import userconfig
 
@@ -181,6 +183,69 @@ class Command(Debuggable):
 
     # Strip off the command name from the args -- we don't need it.
     self._args = self._args[1:]
+
+  def spawnUserEditor(self, template, filename):
+    '''
+    Spawn the user's editor on a template given in a specific filename.
+    '''
+
+    # Write out the bug report template so the editor can actually hack on it.
+    if not os.path.isfile(filename):
+      try:
+        stream = file(filename, 'w')
+        stream.write(template)
+        stream.close()
+      except OSError, e:
+        sys.stderr.write('Unable to open %s for writing: %s'
+                         % (filename, str(e)))
+        sys.exit(1)
+
+    # Take the hash of the template so that we know if it's been changed we can
+    # go ahead and use it for the report.
+    orig_hash = sha.new(template).hexdigest()
+
+    # Spawn the user's editor here
+    os.system('%s %s' % (self._userConfig.editor, filename))
+
+    # Read it back in
+    try:
+      stream = file(filename, 'r')
+      report = ''.join(stream.readlines())
+      stream.close()
+    except OSError, e:
+      sys.stderr.write('Unable to open %s for reading: %s'
+                       % (filename, str(e)))
+      sys.stderr.write('%s has been left behind.\n' % filename)
+      sys.exit(1)
+
+    # Generate the new hash of the report
+    new_hash = sha.new(report).hexdigest()
+
+    # Verify the hash changed
+    if orig_hash == new_hash:
+      sys.stderr.write('Template unchanged -- aborting.\n')
+      sys.stderr.write('%s has been left behind.\n' % filename)
+      sys.exit(1)
+
+    return report
+
+  def findBugsByNumOrPartial(self, bugnum_or_partial, states=None):
+    filenames = []
+    partial = bugnum_or_partial + '*'
+
+    if states == None:
+      states = bug.STATES
+    elif not isinstance(states, list):
+      raise TypeError('states must be a list or None')
+
+    for state in states:
+      if state not in bug.STATES:
+        raise TypeError('%s is not a valid state.' % state)
+
+    for state in states:
+      filenames += glob.glob('%s/%s/%s' % (self._siteDir, state, partial))
+
+    return filenames
 
   def _getVersionString(self):
     version = '.'.join(map(str, __version__))
