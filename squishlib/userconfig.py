@@ -29,6 +29,8 @@ import socket
 
 import yaml
 
+import emailaddress
+
 
 class UserConfig(yaml.YAMLObject):
   '''
@@ -79,6 +81,8 @@ class UserConfig(yaml.YAMLObject):
       email = os.environ['EMAIL']
 
     hostname = socket.gethostname()
-    return '"%s" <%s@%s>' % (self.getFullname(),
-                             self.getUsername(),
-                             hostname)
+    address = emailaddress.EmailAddress(self.getUsername(),
+                                        hostname,
+                                        self.getFullname())
+
+    return str(address)
