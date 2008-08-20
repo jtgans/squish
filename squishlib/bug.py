@@ -205,25 +205,20 @@ class Bug(yaml.YAMLObject):
     '''
 
     # First, convert all email strings to EmailAddresses
-    for key in ('cc', 'reporter'):
-      var = self.__dict__[key]
-      temp = []
+    if self.reporter:
+      self.reporter = emailaddress.EmailAddress(self.reporter)
 
-      if isinstance(var, list) or isinstance(var, str):
-        # Convert strings of the form "foo, bar, baz" into a list of strings.
-        if isinstance(var, str) and ', ' in var:
-          var = var.split(',')
-          var = map(lambda s: s.strip(), var)  # Strip off any excess
+    if self.assignee:
+      self.assignee = emailaddress.EmailAddress(self.assignee)
 
-        for item in var:
-          if isinstance(item, str):
-            temp.append(emailaddress.EmailAddress(item))
-          elif isinstance(item, emailaddress.EmailAddress):
-            temp.append(item)
-          else:
-            raise BugValidationError('%s is not a valid email address.' % item)
+    if self.cc:
+      if ', ' in self.cc:
+        temp = self.cc.split(',')
+        temp = map(lambda s: emailaddress.EmailAddress(s), temp)
+      else:
+        temp = [ self.cc ]
 
-      self.__dict__[key] = temp
+      self.cc = temp
 
   def validate(self):
     '''
