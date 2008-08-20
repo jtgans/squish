@@ -117,6 +117,19 @@ class EmailAddress(yaml.YAMLObject):
   def __repr__(self):
     return str(self)
 
+  def __eq__(self, other):
+    if isinstance(other, EmailAddress):
+      if (other.user == self.user and
+          other.domain == self.domain):
+        return True
+      return False
+
+  def __ne__(self, other):
+    if isinstance(other, EmailAddress):
+      if (other.user != self.user and
+          other.domain != self.domain):
+        return True
+      return False
 
 # Make sure that when we emit stuff taht the email addresses show up properly
 # without extra annoying tags.
