@@ -79,6 +79,15 @@ class Bug(yaml.YAMLObject):
     self.duplicate = None
 
   def _varOrBlank(self, var):
+    '''
+    Return either the variable provided, or return a blank string.
+
+    This is to fix Python's annoying habit of converting None types to the word
+    None instead of the empty string.
+
+    Additionally combines lists into a comma-separated list.
+    '''
+
     if var:
       if isinstance(var, list):
         return ', '.join(var)
@@ -88,17 +97,23 @@ class Bug(yaml.YAMLObject):
     return ''
 
   def generateReportTemplate(self):
+    '''
+    Generates a new bug report template containing whatever was set in the
+    object directly before this method was called. Should be handed off to the
+    user's favorite editor and then passed on to parseReportTemplate.
+    '''
+
     oldstdout = sys.stdout
     sys.stdout = cStringIO.StringIO()
 
-    print 'Reporter: %s'  % self.reporter
+    print 'Reporter: %s'  % self._varOrBlank(self.reporter)
     print 'CC: %s'        % self._varOrBlank(self.cc)
     print 'Version: %s'   % self._varOrBlank(self.version)
     print 'Priority: %s'  % self._varOrBlank(self.priority)
     print 'Tags: %s'      % self._varOrBlank(self.tags)
     print 'Summary: %s'   % self._varOrBlank(self.summary)
     print '---problem description follows this line---'
-    print
+    print '%s\n' % self._varOrBlank(self.description)
     print '# Describe the bug and the steps you took to cause the it here.'
     print '#'
     print '# Lines beginning with hash marks (like these) are ignored and will'
@@ -183,6 +198,12 @@ class Bug(yaml.YAMLObject):
     self.validate()
 
   def _convertValuesToTypes(self):
+    '''
+    Convert all simple types stored in this object to more complex
+    ones. Specifically, this one just converts email addresses and lists for cc
+    and reporter into EmailAddress objects.
+    '''
+
     # First, convert all email strings to EmailAddresses
     for key in ('cc', 'reporter'):
       var = self.__dict__[key]
@@ -190,9 +211,9 @@ class Bug(yaml.YAMLObject):
 
       if isinstance(var, list) or isinstance(var, str):
         # Convert strings of the form "foo, bar, baz" into a list of strings.
-        if isinstance(var, str):
+        if isinstance(var, str) and ', ' in var:
           var = var.split(',')
-          var = map(lambda s: s.strip(), var)
+          var = map(lambda s: s.strip(), var)  # Strip off any excess
 
         for item in var:
           if isinstance(item, str):
@@ -205,6 +226,10 @@ class Bug(yaml.YAMLObject):
       self.__dict__[key] = temp
 
   def validate(self):
+    '''
+    Validate that the appropriate fields for the bug have been filled out.
+    '''
+
     for field in self._nonemptyFields:
       if (not self.__dict__.has_key(field)
           or not self.__dict__[field]):
