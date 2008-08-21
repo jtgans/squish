@@ -1,5 +1,5 @@
 !bug
-assignee: null
+assignee: '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
 cc: null
 description: !!python/unicode 'This is directly due to the way git was designed. Any
   directories without files
