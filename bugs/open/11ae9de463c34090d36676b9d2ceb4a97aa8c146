@@ -1,0 +1,12 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'While squish has the take command, it really needs
+  an unassign command as well to help provide symmetry.'
+duplicate: null
+priority: feature-request
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish unassign implementation
+tags: ui, commands
+version: null
+worklog: []

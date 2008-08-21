@@ -192,8 +192,6 @@ class Bug(yaml.YAMLObject):
     # Convert the strings we just ingested to their proper values.
     self._convertValuesToTypes()
 
-    print repr(self.__dict__)
-
     # Verify we have a valid bug
     self.validate()
 
