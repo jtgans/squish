@@ -1,5 +1,5 @@
 !bug
-assignee: null
+assignee: '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
 cc: null
 description: !!python/unicode 'While squish has the take command, it really needs
   an unassign command as well to help provide symmetry.'
