@@ -1,0 +1,16 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'report should actually not state that the user must
+  unlink bugreport.txt to
+
+  report another bug -- it''s untrue. Instead, it should state that the user may
+
+  re-edit the bug by issuing the same command as before.'
+duplicate: null
+priority: minor
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: report misrepresents facts on failure to unlink bugreport.txt
+tags: ui
+version: '0.1'
+worklog: []
