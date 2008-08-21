@@ -84,9 +84,7 @@ class ReportCommand(Command):
     filename = sha.new(yamldump).hexdigest()
 
     try:
-      stream = file(self._siteDir + '/open/' + filename, 'w')
-      stream.write(yamldump)
-      stream.close()
+      bug.dumpBugToFile(bugreport, self._siteDir + '/open/' + filename)
     except OSError, e:
       sys.stderr.write('Unable to open %s for writing: %s\n'
                        % (self._siteDir + '/open/' + filename,
@@ -113,7 +111,7 @@ class ReportCommand(Command):
       scripts = self._config.new_post_scripts
 
     if self._config.new_pre_scripts:
-      for script in self._config.new_pre_scripts:
+      for script in scripts:
         try:
           (stdout, stdin) = popen2.popen4(script)
 
@@ -121,10 +119,11 @@ class ReportCommand(Command):
           stdin.write(template)
           stdin.close()
 
-          template = '\n'.join(stdout.readlines())
+          template = ''.join(stdout.readlines())
           stdout.close()
         except OSError, e:
-          sys.stderr.write('Unable to execute %s: %s' % str(e))
+          sys.stderr.write('Unable to execute %s: %s\n' % str(e))
+          sys.stderr.write('bugreport.txt left behind.\n')
           sys.exit(1)
 
     return template
