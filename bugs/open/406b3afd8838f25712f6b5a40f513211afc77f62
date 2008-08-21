@@ -1,0 +1,18 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'If squish resolve is given a bug already in state fixed
+  and tries to mark it
+
+  fixed again, it will unwittingly unlink the very file it''s trying to mark fixed.
+
+  We should add a check against the new and old states to make sure they''re not
+
+  the same.'
+duplicate: null
+priority: major
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish resolve can clobber its own files
+tags: command
+version: '0.1'
+worklog: []
