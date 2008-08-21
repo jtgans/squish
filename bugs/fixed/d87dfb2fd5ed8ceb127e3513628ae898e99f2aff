@@ -1,5 +1,5 @@
 !bug
-assignee: '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+assignee: null
 cc: null
 description: !!python/unicode 'Squish can report and manage bugs, but there''s no
   current way to /edit/ a bug.
