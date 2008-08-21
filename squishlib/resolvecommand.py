@@ -52,11 +52,11 @@ class ResolveCommand(Command):
     Command.__init__(self)
 
   def _setupOptParse(self):
-    self._parser.add_option('-u', '--unassign', dest='unassign',
-                            action='store_true',
-                            default=False,
-                            help=('If the specified bug is assigned to '
-                                  'someone, unassign it.'))
+    self._parser.add_option('-i', '--inhibit-unassign', dest='unassign',
+                            action='store_false',
+                            default=True,
+                            help=('Inhibit the default action of unassigning '
+                                  'the bug.'))
 
     self._parser.add_option('-w', '--add-worklog', dest='add_worklog',
                             action='store_true',
