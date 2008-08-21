@@ -63,8 +63,9 @@ tag:
            --username $(SVN_USER)
 
 $(DIST_FILENAME):
-	svn export http://squish.googlecode.com/svn/tags/$(VERSION) /tmp/squish-$(VERSION)
-	tar -C /tmp/squish-$(VERSION) -zcvf $(DIST_FILENAME) .
+	git clone -n . /tmp/squish-$(VERSION)
+	cd /tmp/squish-$(VERSION); git checkout v$(VERSION)
+	tar -C /tmp/squish-$(VERSION) --exclude=.git -zcf $(DIST_FILENAME) .
 	rm -rf /tmp/squish-$(VERSION)
 
 dist: $(DIST_FILENAME)
