@@ -1,0 +1,22 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'This is directly due to the way git was designed. Any
+  directories without files
+
+  in them are not stored in the scm. The end result is that when no tickets are in
+
+  a given status, the directory disappears. We should fix init to add small, zero
+
+  length dotfiles in each of the state directories to work around this. The
+
+  findBugsByNumOrPartial method in Command should then be updated to catch
+
+  filenames of that nature and not treat them as bugs.'
+duplicate: null
+priority: crash
+reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+summary: squish commands crashe when scm removes dirs in the site dir
+tags: commands, scm, directories, states
+version: '0.1'
+worklog: []
