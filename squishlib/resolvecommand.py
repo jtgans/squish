@@ -97,8 +97,15 @@ class ResolveCommand(Command):
       state = 'fixed'
 
     oldfilename = bugfiles[0]
+    oldstate    = bugfiles[0].split('/')[-2]
     bugnum      = os.path.basename(oldfilename)
     newfilename = '%s/%s/%s' % (self._siteDir, state, bugnum)
+
+    if oldstate == state:
+      sys.stderr.write('Attempt to resolve a bug into a state it\'s already '
+                       'in!\n')
+      sys.stderr.write('Aborting.\n')
+      sys.exit(1)
 
     try:
       bugreport = bug.loadBugFromFile(oldfilename)

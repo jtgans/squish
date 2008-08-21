@@ -1,5 +1,5 @@
 !bug
-assignee: '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>'
+assignee: null
 cc: null
 description: !!python/unicode 'If squish resolve is given a bug already in state fixed
   and tries to mark it
