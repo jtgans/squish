@@ -65,7 +65,7 @@ class ListCommand(Command):
 
   def runCommand(self):
     if len(self._args) > 0:
-      partial = self._args[0] + '*'
+      partial = self._args[0]
     else:
       partial = '*'
 

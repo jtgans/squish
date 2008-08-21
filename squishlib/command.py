@@ -231,8 +231,16 @@ class Command(Debuggable):
     return report
 
   def findBugsByNumOrPartial(self, bugnum_or_partial, states=None):
+    if not bug.BUG_PATTERN.match(bugnum_or_partial):
+      raise TypeError('%s is not a valid bug number or partial.'
+                      % bugnum_or_partial)
+
     filenames = []
-    partial = bugnum_or_partial + '*'
+
+    if not '*' in bugnum_or_partial:
+      partial = bugnum_or_partial + '*'
+    else:
+      partial = bugnum_or_partial
 
     if states == None:
       states = bug.STATES
@@ -244,7 +252,13 @@ class Command(Debuggable):
         raise TypeError('%s is not a valid state.' % state)
 
     for state in states:
-      filenames += glob.glob('%s/%s/%s' % (self._siteDir, state, partial))
+      globbed_names = glob.glob('%s/%s/%s' % (self._siteDir, state, partial))
+
+      for name in globbed_names:
+        basename = os.path.basename(name)
+
+        if bug.BUG_PATTERN.match(basename):
+          filenames.append(name)
 
     return filenames
 

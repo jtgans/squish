@@ -41,6 +41,8 @@ STATES = [
   'wont-fix'
   ]
 
+BUG_PATTERN = re.compile(ur'^[a-fA-F0-9*?]+$')
+
 
 class BugValidationError(Exception):
   '''

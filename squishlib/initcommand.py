@@ -70,6 +70,9 @@ class InitCommand(Command):
     try:
       for state in bug.STATES:
         os.mkdir('bugs/%s' % state)
+
+        # Add a zero length file to keep scms happy.
+        file('bugs/%s/.keep_this_dir' % state, 'w').close()
     except OSError, e:
       sys.stderr.write('Unable to create bugs/%s: %s\n' % (state, str(e)))
       return 1
