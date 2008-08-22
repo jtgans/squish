@@ -53,6 +53,7 @@ fixspaces:
 clean:
 	find -iname \*.pyc -exec rm -f '{}' ';'
 	rm -f $(DIST_FILENAME)
+	rm -rf build
 
 mrclean: clean
 	find -iname \*~ -exec rm -rf '{}' ';' -prune
@@ -65,6 +66,7 @@ tag:
 $(DIST_FILENAME):
 	git clone -n . /tmp/squish-$(VERSION)
 	cd /tmp/squish-$(VERSION); git checkout v$(VERSION)
+	sed -e 's/DEVELOPMENT_MODE = True/DEVELOPMENT_MODE = False/' -i /tmp/squish-$(VERSION)/src/squish
 	tar -C /tmp/squish-$(VERSION) --exclude=.git -zcf $(DIST_FILENAME) .
 	rm -rf /tmp/squish-$(VERSION)
 
