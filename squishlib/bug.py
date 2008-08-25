@@ -28,6 +28,7 @@ import cStringIO
 import yaml
 
 import emailaddress
+import worklog
 
 
 STATES = [
