@@ -27,13 +27,14 @@ import sys
 import yaml
 
 
-EMAIL_PATTERN = re.compile(
-  (ur'(?:"(?P<comment>.+)")?'           # "comment"
-   ur'[ \t]*'                           # whitespace
-   ur'(?P<angle><)?'                    # <
-   ur'(?P<username>[\w.+-]+)@'          # username@
-   ur'(?P<domain>[\w-]+(?:\.[\w-]+)+)'  # domain.com
-   ur'(?(angle)>)'))                    # >
+EMAIL_PATTERN = (ur'(?:"(?P<comment>.+)")?'           # "comment"
+                 ur'[ \t]*'                           # whitespace
+                 ur'(?P<angle><)?'                    # <
+                 ur'(?P<username>[\w.+-]+)@'          # username@
+                 ur'(?P<domain>[\w-]+(?:\.[\w-]+)+)'  # domain.com
+                 ur'(?(angle)>)')                     # >
+
+EMAIL_RE = re.compile(EMAIL_PATTERN)
 
 
 class EmailValidationError(Exception):
@@ -67,7 +68,7 @@ class EmailAddress(yaml.YAMLObject):
 
   @classmethod
   def to_yaml(cls, dumper, data):
-    return dumper.represent_scalar(u'!emailaddress', u'%s' % str(data))
+    return dumper.represent_scalar(cls.yaml_tag, u'%s' % str(data))
 
   @classmethod
   def from_yaml(cls, loader, node):
@@ -78,7 +79,7 @@ class EmailAddress(yaml.YAMLObject):
     # Clean up any trailing and leading whitespace.
     address.strip()
 
-    match = EMAIL_PATTERN.match(address)
+    match = EMAIL_RE.match(address)
 
     if match == None:
       raise EmailValidationError('Address %s is not a valid email address.'
@@ -115,7 +116,8 @@ class EmailAddress(yaml.YAMLObject):
       return '<%s@%s>' % (self.user, self.domain)
 
   def __repr__(self):
-    return str(self)
+    return "%s('%s')" % (self.__class__.__name__,
+                         self.__str__())
 
   def __eq__(self, other):
     if isinstance(other, EmailAddress):
@@ -131,7 +133,7 @@ class EmailAddress(yaml.YAMLObject):
         return True
       return False
 
+
 # Make sure that when we emit stuff taht the email addresses show up properly
 # without extra annoying tags.
-
-yaml.add_implicit_resolver(u'!emailaddress', EMAIL_PATTERN)
+yaml.add_implicit_resolver(EmailAddress.yaml_tag, EMAIL_RE)
