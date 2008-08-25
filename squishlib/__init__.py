@@ -26,6 +26,7 @@ utilities.
 '''
 
 import os
+import yaml
 
 
 __version__  = (0, 2)
