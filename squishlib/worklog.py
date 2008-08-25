@@ -23,6 +23,7 @@ Squish: The stupid bug tracker.
 
 import re
 import yaml
+import datetime
 
 import emailaddress
 
@@ -32,14 +33,23 @@ class Worklog(yaml.YAMLObject):
   A single worklog entry. Bugs typically have zero or more of these.
   '''
 
-  yaml_tag = '!Worklog'
+  yaml_tag = '!worklog'
 
   def __init__(self):
     self.poster = None
-    self.date = None
+    self.date = datetime.datetime.utcnow()
     self.description = None
+
+
+  def __repr__(self):
+    return ('%s(poster=%s, date=%s, description=%s)'
+            % (self.__class__.__name__,
+               self.poster,
+               self.date.isoformat(),
+               self.description))
 
 
 # Make sure that when we emit stuff that the worklog shows up properly without
 # extra annoying tags.
-yaml.add_path_resolver(u'!Worklog', (u'worklog', [list, False]))
+
+yaml.add_path_resolver(u'!worklog', (u'worklog', [list, False]))
