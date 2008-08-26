@@ -14,7 +14,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-PY_MODULES     := $(wildcard squishlib/*.py)
+PY_MODULES     := $(wildcard lib/squish/*.py)
 PY_SOURCE      := src/squish
 PY_UNIT_TESTS  := $(wildcard tests/unit/*_test.py)
 
@@ -27,7 +27,7 @@ SVN_USER := $(shell echo $$USER)
 endif
 
 ifndef VERSION
-VERSION := $(shell cat squishlib/__init__.py \
+VERSION := $(shell cat lib/squish/__init__.py \
 				|grep __version__ \
 				|sed -e 's/.*= (//' -e 's/)//' -e 's/, /./g')
 endif
@@ -45,7 +45,7 @@ unit-tests:
 
 check:
 	pylint --rcfile pylintrc $(PY_SOURCE)
-	pylint --rcfile pylintrc squishlib
+	pylint --rcfile pylintrc lib/squish
 
 fixspaces:
 	sed -i -r 's/^[ ]+$$//' $(PY_MODULES) $(PY_SOURCE) $(PY_TESTS)
