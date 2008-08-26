@@ -1,5 +1,5 @@
 !bug
-assignee: '"June Tate-Gans" <june@theonelab.com>'
+assignee: null
 cc: null
 description: !!python/unicode 'squish help --version doesn''t properly report the
   program name. In fact, most

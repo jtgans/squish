@@ -264,7 +264,7 @@ class Command(Debuggable):
 
   def _getVersionString(self):
     version = '.'.join(map(str, __version__))
-    return '%s %s' % (progName, version)
+    return 'squish %s' % version
 
   def generateHelp(self):
     '''
