@@ -57,7 +57,7 @@ class ShowCommand(Command):
       partial = self._args[0]
     else:
       partial = '*'
-      
+
     bugfiles = self.findBugsByNumOrPartial(self._args[0])
 
     if len(bugfiles) > 1:
@@ -101,24 +101,26 @@ class ShowCommand(Command):
     if not len(result.worklog):
       print 'No worklog entries.'
     else:  
-      print
-      print 'Worklog:'
-      print '-' * 78
+      print '--- Worklog: ---'
+
       for entry in result.worklog:
         print 'Poster: %s' % entry.poster
         print 'Date: %s' % entry.date
         print
-        print entry.description
+
+        for line in entry.description.split('\n'):
+          print '    %s' % line
+
         print
-        print '--'
-    
+        print
+
     return 0
 
   def _convertToString(self, var):
     '''
     Quick method to return a proper string. Handles lists, strings,
     None, and unknown types gracefully.
-    
+
     Typically used for format strings. Ie:
 
       print '%s' % self._convertToString(foo)
