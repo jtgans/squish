@@ -20,7 +20,7 @@ setup(
   author_email = 'jtgans@google.com',
   url          = 'http://squish.googlecode.com',
 
-  package_dir  = { '': '.' },
+  package_dir  = { '': 'lib' },
   packages     = [ 'squish' ],
   scripts      = glob.glob('src/*'),
   data_files   = []
