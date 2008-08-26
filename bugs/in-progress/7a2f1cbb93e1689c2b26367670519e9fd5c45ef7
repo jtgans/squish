@@ -1,5 +1,5 @@
 !bug
-assignee: null
+assignee: '"June Tate-Gans" <june@theonelab.com>'
 cc: null
 description: !!python/unicode 'Squish currently lacks the ability to simply add additional
   information to a bug in the worklog. We need that ability.'
