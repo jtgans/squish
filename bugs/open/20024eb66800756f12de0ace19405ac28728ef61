@@ -1,0 +1,14 @@
+!bug
+assignee: null
+cc: null
+description: !!python/unicode 'There are several methods in Bug and Worklog that are
+  nearly identical
+
+  -- we should refactor those into a common superclass.'
+duplicate: null
+priority: null
+reporter: !emailaddress '"June Tate-Gans" <june@theonelab.com>'
+summary: bug and worklog shouldn't repeat themselves
+tags: minor
+version: null
+worklog: []
