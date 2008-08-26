@@ -28,9 +28,10 @@ import optparse
 
 import yaml
 
-from squishlib import commands
-from squishlib import progName
+from . import progName
+
 from command import Command
+from registeredcommand import commands
 
 import config
 import bug

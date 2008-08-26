@@ -27,12 +27,12 @@ import optparse
 
 import yaml
 
-from squishlib import showSquishUsage
-from squishlib import generateSquishUsage
-from squishlib import commands
-from squishlib import progName
+from . import showSquishUsage
+from . import generateSquishUsage
+from . import progName
 
 from command import Command
+from registeredcommand import commands
 
 
 class HelpCommand(Command):

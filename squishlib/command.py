@@ -30,8 +30,8 @@ import optparse
 
 import yaml
 
-from squishlib import progName
-from squishlib import __version__
+from . import progName
+from . import __version__
 
 from debuggable import Debuggable
 from registeredcommand import RegisteredCommand
