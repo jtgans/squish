@@ -120,13 +120,21 @@ class ResolveCommand(Command):
 
     # TODO(jtg): Add code for adding the worklog
     if self._flags.add_worklog:
-      if isinstance(self._flags.add_worklog, str):
-        # TODO(jtg): Add code to read the worklog straight from the command
-        # line.
-        pass
+      entry = worklog.Worklog()
+      entry.poster = self._userConfig.email
+      entry.description = 'Marking this bug as %s.' % state
+      template = entry.generateReportTemplate()
+      report = self.spawnUserEditor(template, 'worklog.txt')
 
-      else:
-        self.spawnUserEditor('', 'worklog.txt')
+      try:
+        entry.parseReportTemplate(report)
+      except worklog.WorklogValidationError, e:
+        sys.stderr.write(('Worklog report validation error: '
+                          '%s\n' % str(e)))
+        sys.stderr.write('worklog.txt left behind\n')
+        sys.exit(1)
+
+      bugreport.worklog.append(entry)
 
     if self._flags.unassign:
       bugreport.assignee = None
@@ -141,6 +149,9 @@ class ResolveCommand(Command):
 
     try:
       os.unlink(oldfilename)
+
+      if self._flags.add_worklog:
+        os.unlink('worklog.txt')
     except OSError, e:
       sys.stderr.write('Unable to unlink %s: %s\n' % (oldfilename, str(e)))
       sys.stderr.write('Non-fatal error. Please remove %s before submitting.\n'

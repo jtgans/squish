@@ -1,5 +1,5 @@
 !bug
-assignee: '"June Tate-Gans" <june@theonelab.com>'
+assignee: null
 cc: null
 description: !!python/unicode 'Although documented in the commands option help, the
   take and resolve commands
@@ -11,4 +11,11 @@ reporter: !emailaddress '"June Tate-Gans" <jtgans@jtgans-nx.mtv.corp.google.com>
 summary: squish take and squish resolve don't update worklogs
 tags: ui, commands
 version: null
-worklog: []
+worklog:
+- date: 2008-08-26 05:11:08.215235
+  description: !!python/unicode 'It sure does allow you to update the worklog now!
+    Bwahaha! I win! =o)
+
+
+    Marking this bug as fixed.'
+  poster: !emailaddress '"June Tate-Gans" <june@theonelab.com>'

@@ -90,7 +90,21 @@ class TakeCommand(Command):
       sys.exit(1)
 
     if self._flags.add_worklog:
-      self.spawnUserEditor('', 'worklog.txt')
+      entry = worklog.Worklog()
+      entry.poster = self._userConfig.email
+      entry.description = 'Taking this bug.'
+      template = entry.generateReportTemplate()
+      report = self.spawnUserEditor(template, 'worklog.txt')
+
+      try:
+        entry.parseReportTemplate(report)
+      except worklog.WorklogValidationError, e:
+        sys.stderr.write(('Worklog report validation error: '
+                          '%s\n' % str(e)))
+        sys.stderr.write('worklog.txt left behind\n')
+        sys.exit(1)
+
+      bugreport.worklog.append(entry)
 
     bugreport.assignee = self._userConfig.email
 
@@ -104,6 +118,9 @@ class TakeCommand(Command):
 
     try:
       os.unlink(oldfilename)
+
+      if self._flags.add_worklog:
+        os.unlink('worklog.txt')
     except OSError, e:
       sys.stderr.write('Unable to unlink %s: %s\n' % (oldfilename, str(e)))
       sys.stderr.write('Non-fatal error. Please remove %s before submitting.\n'
