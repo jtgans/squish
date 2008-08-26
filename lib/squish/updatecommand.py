@@ -59,7 +59,7 @@ class UpdateCommand(Command):
       partial = self._args[0]
     else:
       partial = '*'
-      
+
     bugfiles = self.findBugsByNumOrPartial(self._args[0])
 
     if len(bugfiles) > 1:
@@ -99,7 +99,7 @@ class UpdateCommand(Command):
                         '%s\n' %  str(e)))
       sys.stderr.write('worklog.txt left behind\n')
       sys.exit(1)
-    
+
     bugreport.worklog.append(entry)
 
     try:
@@ -131,7 +131,7 @@ class UpdateCommand(Command):
     '''
     Quick method to return a proper string. Handles lists, strings,
     None, and unknown types gracefully.
-    
+
     Typically used for format strings. Ie:
 
       print '%s' % self._convertToString(foo)
