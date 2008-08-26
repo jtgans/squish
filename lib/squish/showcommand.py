@@ -115,6 +115,15 @@ class ShowCommand(Command):
     return 0
 
   def _convertToString(self, var):
+    '''
+    Quick method to return a proper string. Handles lists, strings,
+    None, and unknown types gracefully.
+    
+    Typically used for format strings. Ie:
+
+      print '%s' % self._convertToString(foo)
+    '''
+
     if isinstance(var, list):
       return ', '.join(var)
     elif isinstance(var, str):
