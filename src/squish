@@ -32,11 +32,11 @@ DEVELOPMENT_MODE = True
 if DEVELOPMENT_MODE == True:
   libpath = os.path.abspath(sys.argv[0])
   libpath = os.path.dirname(libpath)
-  libpath = os.path.join(libpath, '../')
+  libpath = os.path.join(libpath, '../lib')
 
   sys.path.append(libpath)
 
-import squishlib
+import squish
 
 
 def main():
@@ -44,22 +44,22 @@ def main():
   Mainline of the program.
   '''
 
-  squishlib.progName = os.path.basename(sys.argv[0])
+  squish.progName = os.path.basename(sys.argv[0])
 
-  if '-' in squishlib.progName:
-    (squishlib.progName, command_name) = squishlib.progName.split('-')
+  if '-' in squish.progName:
+    (squish.progName, command_name) = squish.progName.split('-')
   elif len(sys.argv) > 1:
     command_name = sys.argv[1]
   else:
-    squishlib.showSquishUsage()
+    squish.showSquishUsage()
     sys.exit(1)
 
-  if not command_name in squishlib.registeredcommand.commands.keys():
+  if not command_name in squish.registeredcommand.commands.keys():
     print '%s is not a valid command.' % command_name
-    squishlib.showSquishUsage()
+    squish.showSquishUsage()
     sys.exit(1)
 
-  cmd = squishlib.registeredcommand.commands[command_name]()
+  cmd = squish.registeredcommand.commands[command_name]()
   result = cmd.runCommand()
 
   sys.exit(result)
