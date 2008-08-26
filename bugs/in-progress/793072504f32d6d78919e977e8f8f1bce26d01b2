@@ -1,5 +1,5 @@
 !bug
-assignee: null
+assignee: '"June Tate-Gans" <june@theonelab.com>'
 cc: null
 description: !!python/unicode 'Although documented in the commands option help, the
   take and resolve commands
