@@ -23,9 +23,9 @@ Squish: The stupid bug tracker.
 
 import os
 import sys
-import sha
+import hashlib
 import glob
-import popen2
+import subprocess
 import optparse
 
 import yaml
@@ -82,7 +82,7 @@ class ReportCommand(Command):
     # sha-1 filename and dump it to the bugreport file.
 
     yamldump = yaml.dump(bugreport, default_flow_style=False)
-    filename = sha.new(yamldump).hexdigest()
+    filename = sha1(yamldump).hexdigest()
 
     try:
       bug.dumpBugToFile(bugreport, self._siteDir + '/open/' + filename)
@@ -114,7 +114,9 @@ class ReportCommand(Command):
     if self._config.new_pre_scripts:
       for script in scripts:
         try:
-          (stdout, stdin) = popen2.popen4(script)
+          p = subprocess.Popen([script], shell=True, bufsize=bufsize,
+                               stdin=PIPE, stdout=PIPE, close_fds=True)
+          (stdout, stdin) = (p.stdout, p.stdin)
 
           # Write out the template and get the result
           stdin.write(template)

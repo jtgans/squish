@@ -23,7 +23,7 @@ Squish: The stupid bug tracker.
 
 import os
 import sys
-import sha
+import hashlib
 import glob
 import optparse
 

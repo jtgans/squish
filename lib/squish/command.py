@@ -24,7 +24,7 @@ Squish: The stupid bug tracker.
 import os
 import os.path
 import sys
-import sha
+import hashlib
 import glob
 import optparse
 
@@ -203,7 +203,7 @@ class Command(Debuggable):
 
     # Take the hash of the template so that we know if it's been changed we can
     # go ahead and use it for the report.
-    orig_hash = sha.new(template).hexdigest()
+    orig_hash = sha1(template).hexdigest()
 
     # Spawn the user's editor here
     os.system('%s %s' % (self._userConfig.editor, filename))
@@ -220,7 +220,7 @@ class Command(Debuggable):
       sys.exit(1)
 
     # Generate the new hash of the report
-    new_hash = sha.new(report).hexdigest()
+    new_hash = sha1(report).hexdigest()
 
     # Verify the hash changed
     if orig_hash == new_hash:
