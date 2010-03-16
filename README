@@ -5,3 +5,22 @@ Requirements
 ------------
 
 PyYAML (python-yaml on Debian-derived distributions)
+
+
+What is it?
+-----------
+
+Squish is a simple distributed bug tracker. Its main features are:
+
+  - It stores its bugs in the same SCM as the source code the bugs refer to.
+
+  - It can run arbitrary scripts on each event.
+
+  - Bugs are tightly coupled with the code they reflect -- if you
+    branch, the same set of bugs go with the newly created branch.
+
+  - It's designed to work cleanly with distributed SCMs, so bug
+    numbers are based upon SHA-1 hashes of the original contents.
+
+  - Bugs are stored in a clean (mostly) markup-free YAML format that
+    is human readable.
