@@ -118,6 +118,7 @@ class ResolveCommand(Command):
                        % oldfilename)
       sys.exit(1)
 
+    # TODO(jtg): Add code for adding the worklog
     if self._flags.add_worklog:
       entry = worklog.Worklog()
       entry.poster = self._userConfig.email
